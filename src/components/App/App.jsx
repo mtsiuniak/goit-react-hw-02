@@ -3,23 +3,17 @@ import { useEffect, useState } from "react";
 import Description from '../Description/Description';
 import Options from '../Options/Options';
 import Feedback from '../Feedback/Feedback';
+import Notification from "../Notification/Notification";
 
 export default function App() {
 
     const [state, setState] = useState(() => {
 
-        const goodMark = localStorage.getItem('good');
-        const neutralMark = localStorage.getItem('neutral');
-        const badMark = localStorage.getItem('bad');
+        const savedFeedback = localStorage.getItem('feedback');
 
-        if (goodMark !== null || neutralMark !== null || badMark !== null) {
-            return {
-            good: JSON.parse(goodMark),
-            neutral: JSON.parse(neutralMark),
-            bad: JSON.parse(badMark)
-            }
+        if (savedFeedback !== null) {
+            return JSON.parse(savedFeedback);
         }
-
         return {
         good: 0,
         neutral: 0,
@@ -27,9 +21,9 @@ export default function App() {
         }
     });
 
-    useEffect(() => { localStorage.setItem('good', state.good)}, [state.good])
-    useEffect(() => { localStorage.setItem('neutral', state.neutral)}, [state.neutral])
-    useEffect(() => { localStorage.setItem('bad', state.bad)}, [state.bad])
+    useEffect(() => {
+    localStorage.setItem('feedback', JSON.stringify(state));
+    }, [state]);
     
     const updateFeedback = feedbackType => {setState(prevState => {
     return {
@@ -55,7 +49,7 @@ export default function App() {
             <Description />
             <Options clickHandler={updateFeedback} reset={resetFeedback} total={totalFeedback} />
             <br/>
-            {totalFeedback > 0 ? <Feedback state={state} total={totalFeedback} positive={positiveFeedbacks} /> : "No feedbacks yet"}
+            {totalFeedback > 0 ? <Feedback state={state} total={totalFeedback} positive={positiveFeedbacks} /> : <Notification/>}
         </>
     )
 }
